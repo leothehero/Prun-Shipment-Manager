@@ -1,0 +1,27 @@
+{
+  "name": "majesticons",
+  "version": "2.1.2",
+  "description": "A versitile, beautiful and scalable iconset. 210 icons each in line and solid.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halfmage/majesticons.git"
+  },
+  "keywords": [
+    "icons",
+    "vector",
+    "svg"
+  ],
+  "author": "Gerrit Halfmann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/halfmage/majesticons/issues"
+  },
+  "homepage": "https://github.com/halfmage/majesticons#readme",
+  "devDependencies": {
+    "np": "^6.5.0"
+  }
+}

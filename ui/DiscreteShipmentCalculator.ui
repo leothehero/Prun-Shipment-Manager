@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DSC</class>
+ <widget class="QWidget" name="DSC">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>765</width>
+    <height>633</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Discrete Shipment Calculator</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPushButton" name="DSCAddShipmentMaterialButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Add a material to the shipment calculator</string>
+     </property>
+     <property name="text">
+      <string>Add Material</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="DSCImportShipmentLine">
+     <property name="toolTip">
+      <string>Paste a shipment serial string here to load a shipment</string>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Paste Serial String Here</string>
+     </property>
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="DSCParamWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLineEdit" name="DSCTonEntry">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Remaining tonnage in ship</string>
+        </property>
+        <property name="inputMethodHints">
+         <set>Qt::InputMethodHint::ImhNone</set>
+        </property>
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="maxLength">
+         <number>5</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+        <property name="dragEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Tonnage</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="DSCVolEntry">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Remaining volume in ship</string>
+        </property>
+        <property name="inputMethodHints">
+         <set>Qt::InputMethodHint::ImhDigitsOnly</set>
+        </property>
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="maxLength">
+         <number>5</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+        <property name="dragEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Volume</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="DSCExportButton">
+        <property name="text">
+         <string>Export</string>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="DSCRatioButton">
+     <property name="text">
+      <string>Get Ratios</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../PSMresources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>DSCExportButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DSC</receiver>
+   <slot>exportToClipboard()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>718</x>
+     <y>341</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>313</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DSCImportShipmentLine</sender>
+   <signal>returnPressed()</signal>
+   <receiver>DSC</receiver>
+   <slot>serialLoad()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DSCRatioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DSC</receiver>
+   <slot>returnRatios()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>382</x>
+     <y>612</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DSCTonEntry</sender>
+   <signal>inputRejected()</signal>
+   <receiver>DSCTonEntry</receiver>
+   <slot>selectAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>329</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>67</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DSCVolEntry</sender>
+   <signal>inputRejected()</signal>
+   <receiver>DSCVolEntry</receiver>
+   <slot>selectAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>173</x>
+     <y>329</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>173</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>exportToClipboard()</slot>
+  <slot>serialLoad()</slot>
+  <slot>returnRatios()</slot>
+ </slots>
+</ui>
