@@ -7,12 +7,22 @@ import PSMresources
 
 from DSCWidget import DSCWidget
 from FleetTracker import FleetTracker
-from PrunPythonTools.PRUNDataManager import DataManager
+from PrunPythonTools.PRUNDataManager import DataManager, APPDATAFIELD
 
 
-print("###############################################################")
-print("#PrUn Shipment Manager [PSM]: Prototype Major Build 1 - v0.1.1#")
-print("###############################################################")
+print("#####################################################")
+print("#PrUn Shipment Manager [PSM]: Prototype v0.1.2 Indev#")
+print("#####################################################")
+
+defaultConfig = dict({
+                "auth": None,
+                "group": None,
+                APPDATAFIELD: {
+                    "ships": {},
+                    "contracts":{}
+                }, # TODO: detail the data structure of all parameters I use so that other applications can stay in standard.
+            })
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -30,14 +40,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.PDM = DataManager({
             "ConfigPath": "PSM.cfg",
             "QtStatusBar": (self.statusBar(),0),
-        })
-        icon = self.getColouredIcon(cur_dir+"/majesticons-2.1.2/solid/browser.svg")
+        }, defaultConfig)
+
+        # TODO: Fix
+        icon = self.getColouredIcon(cur_dir+"/majesticons-2.1.2/solid/browser.svg") 
         self.setWindowIcon(icon)
 
         # Load the DSC
         self.DSCWidget = DSCWidget(self.PDM)
         self.setCentralWidget(self.DSCWidget)
 
+        # Load the Fleet Tracker
+        self.FleetTracker = FleetTracker(self.PDM)
+        self.FleetTracker.show()
+
+        i = self.PDM.fetchFleetsByUsers(("Tonatsi"))
         ()
     
     def getColouredIcon(self,resourceLocator,color='black'): 

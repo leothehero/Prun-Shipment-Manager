@@ -129,7 +129,7 @@
                   <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <property name="text">
-                  <string>Aeternum</string>
+                  <string/>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -194,7 +194,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="format">
-                  <string>%v/%m</string>
+                  <string>%vt/%mt</string>
                  </property>
                 </widget>
                </item>
@@ -216,7 +216,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="format">
-                  <string>%v/%m</string>
+                  <string>%vm3/%mm3</string>
                  </property>
                 </widget>
                </item>
@@ -250,7 +250,7 @@
                   </size>
                  </property>
                  <property name="text">
-                  <string>Hortus</string>
+                  <string/>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>

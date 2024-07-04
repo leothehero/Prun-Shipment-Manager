@@ -41,5 +41,25 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>configureButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Form</receiver>
+   <slot>configureToggle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>464</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>464</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>configureToggle()</slot>
+ </slots>
 </ui>
