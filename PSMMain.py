@@ -30,7 +30,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         cur_dir = os.path.dirname(__file__)
         super(MainWindow, self).__init__(*args, **kwargs)
-        self.setGeometry(550, 200, 850, 800)
+        # self.setGeometry(550, 200, 850, 800)
         self.theme = QGuiApplication.styleHints().colorScheme().value # 0=unknown 1=light 2=dark
         winIcon = QIcon("icon.png")
         self.setWindowIcon(winIcon) # TODO: Find an Icon
@@ -41,6 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "ConfigPath": "PSM.cfg",
             "QtStatusBar": (self.statusBar(),0),
         }, defaultConfig)
+        
 
         # TODO: Fix
         icon = self.getColouredIcon(cur_dir+"/majesticons-2.1.2/solid/browser.svg") 
@@ -54,7 +55,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.FleetTracker = FleetTracker(self.PDM)
         self.FleetTracker.show()
 
-        i = self.PDM.fetchFleetsByUsers(("Tonatsi"))
         ()
     
     def getColouredIcon(self,resourceLocator,color='black'): 
