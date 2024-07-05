@@ -170,7 +170,7 @@
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>Ship Name</string>
+                  <string>Vessel Name</string>
                  </property>
                  <property name="frameShape">
                   <enum>QFrame::Shape::Panel</enum>
@@ -204,7 +204,7 @@
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>Ship Transponder</string>
+                  <string>Vessel Transponder</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -258,6 +258,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Vessel cargo bay weight Load and Capacity</string>
+                 </property>
                  <property name="maximum">
                   <number>0</number>
                  </property>
@@ -285,6 +288,9 @@
                    <width>110</width>
                    <height>0</height>
                   </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Vessel cargo bay volume Load and Capacity</string>
                  </property>
                  <property name="maximum">
                   <number>0</number>
@@ -341,6 +347,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Vessel Destination</string>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -393,6 +402,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Vessel Owner</string>
+                 </property>
                  <property name="text">
                   <string>*Username Unavailable*</string>
                  </property>
@@ -414,6 +426,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Vessel Route</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
@@ -470,6 +485,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="toolTip">
+            <string>Untrack Vessel</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -488,6 +506,9 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Modify Vessel Entry</string>
            </property>
            <property name="text">
             <string/>
@@ -512,22 +533,6 @@
    <signal>clicked()</signal>
    <receiver>ShipInfoPanel</receiver>
    <slot>deleteEntry()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>982</x>
-     <y>174</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>498</x>
-     <y>175</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>deleteButton</sender>
-   <signal>clicked()</signal>
-   <receiver>ShipInfoPanel</receiver>
-   <slot>deleteLater()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>982</x>

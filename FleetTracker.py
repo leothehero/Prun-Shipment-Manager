@@ -5,16 +5,28 @@ from PyQt6.QtWidgets import QSizePolicy
 
 import os
 
+def decodeLocation(location):
+    system, subLocation = location.split(" - ")
+    system = system.rsplit(" ",1)
+    subLocation = subLocation.rsplit(" ",1)
+    return system, subLocation
+
 class ShipPanel(QWidget):
-    def __init__(self,shipInfo): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
+    def __init__(self,shipInfo, PDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
         super().__init__()
+        self.PDM = PDM
         self.registration = shipInfo["Registration"]
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
         self.nameLabel.setText(shipInfo["Name"] if "Name" in shipInfo else "*Name Unavailable*")
         self.transponderLabel.setText(shipInfo["Registration"] if "Registration" in shipInfo else "*Registration Unavailable*")
-        self.destinationLabel.setText(shipInfo["Destination"].split(" - ",1)[1] if "Destination" in shipInfo else "*Destination Unavailable*")
-        self.usernameLabel.setText(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "*Username Unavailable*")
+        
+        system, subLocation = decodeLocation(shipInfo["Destination"])
+        destination = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
+        self.destinationLabel.setText(destination if "Destination" in shipInfo else "*Destination Unavailable*")
+        userData = self.PDM.getUserInfo(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
+        username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
+        self.usernameLabel.setText(username)
 
         if "Storage" in shipInfo:
             self.weightBar.setMaximum(int(round(shipInfo["Storage"]["WeightCapacity"],0)))
@@ -65,7 +77,7 @@ class FleetTracker(QWidget):
 
     def displayShips(self):
         for transponder in self.trackedShips:
-            self.shipDisplayPanels[transponder] = ShipPanel(self.PDM.getShipData(transponder))
+            self.shipDisplayPanels[transponder] = ShipPanel(self.PDM.getShipData(transponder),self.PDM)
             self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
             self.configureButton.toggled.connect(self.shipDisplayPanels[transponder].toggleEditMode)
     

@@ -1,7 +1,6 @@
 import os
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtGui import QIcon, QColor, QPixmap, QGuiApplication, QStyleHints
-from qt_material import apply_stylesheet
 import sys
 import PSMresources
 
@@ -77,8 +76,6 @@ def main():
     main = MainWindow()
     main.show()
     app.setStyle('Fusion')
-    #apply_stylesheet(app, theme='dark_medical.xml')
-    #app.palette().setCurrentColorGroup(QColor.darker())
     code = app.exec()
     ()
     sys.exit(code)
