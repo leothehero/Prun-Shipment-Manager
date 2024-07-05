@@ -1,7 +1,6 @@
 from PyQt6 import uic
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLabel, QFrame
-from PyQt6.QtGui import QGuiApplication, QIntValidator
-from PyQt6.QtWidgets import QSizePolicy
+from PyQt6.QtWidgets import QWidget
+from PyQt6.QtCore import QDateTime, QTimer
 
 import os
 
@@ -20,11 +19,26 @@ class ShipPanel(QWidget):
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
         self.nameLabel.setText(shipInfo["Name"] if "Name" in shipInfo else "*Name Unavailable*")
         self.transponderLabel.setText(shipInfo["Registration"] if "Registration" in shipInfo else "*Registration Unavailable*")
+        
         destination = "*Destination Unavailable*"
         if "Destination" in shipInfo:
             system, subLocation = decodeLocation(shipInfo["Destination"])
             destination = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
         self.destinationLabel.setText(destination)
+
+        location = "*Location Unavailable*"
+        if "Location" in shipInfo:
+            if shipInfo["Location"] == '':
+                location = "**Traversing the Void**"
+            else:
+                self.timer = QTimer(self)
+                self.timer.timeout.connect(self.showTime)
+                self.timer.start(1000)
+                self.showTime()
+                system, subLocation = decodeLocation(shipInfo["Location"])
+                location = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
+                location = "__"+location+"__"
+        self.locationLabel.setText(location)
         userData = self.PDM.getUserInfo(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
         username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
         self.usernameLabel.setText(username)
@@ -34,6 +48,12 @@ class ShipPanel(QWidget):
             self.weightBar.setValue(int(round(shipInfo["Storage"]["WeightLoad"],0)))
             self.volumeBar.setMaximum(int(round(shipInfo["Storage"]["VolumeCapacity"],0)))
             self.volumeBar.setValue(int(round(shipInfo["Storage"]["VolumeLoad"],0)))
+
+        if "ArrivalTimeEpochMs" in shipInfo:
+            #self.arrivalTime.setDisplayFormat("HH:mm dddd")
+            time = QDateTime()
+            time.setMSecsSinceEpoch(shipInfo["ArrivalTimeEpochMs"])
+            self.arrivalTime.setDateTime(time)
 
         self.configureWidget.hide()
     
@@ -47,6 +67,11 @@ class ShipPanel(QWidget):
 
     def deleteEntry(self):
         print("Deleting Ship Entry "+self.registration)
+
+    def showTime(self):
+            time = QDateTime.currentDateTime()
+            self.arrivalTime.setDateTime(time)
+
 
 
 class FleetTracker(QWidget):
