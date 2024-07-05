@@ -20,10 +20,11 @@ class ShipPanel(QWidget):
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
         self.nameLabel.setText(shipInfo["Name"] if "Name" in shipInfo else "*Name Unavailable*")
         self.transponderLabel.setText(shipInfo["Registration"] if "Registration" in shipInfo else "*Registration Unavailable*")
-        
-        system, subLocation = decodeLocation(shipInfo["Destination"])
-        destination = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
-        self.destinationLabel.setText(destination if "Destination" in shipInfo else "*Destination Unavailable*")
+        destination = "*Destination Unavailable*"
+        if "Destination" in shipInfo:
+            system, subLocation = decodeLocation(shipInfo["Destination"])
+            destination = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
+        self.destinationLabel.setText(destination)
         userData = self.PDM.getUserInfo(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
         username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
         self.usernameLabel.setText(username)
