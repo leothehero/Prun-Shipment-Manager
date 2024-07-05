@@ -51,7 +51,6 @@ class MainWindow(QtWidgets.QMainWindow):
         print("PSM: Loading DSC")
         self.DSCWidget = DSCWidget(self.PDM)
         self.setCentralWidget(self.DSCWidget)
-        test = 1
 
         # Load the Fleet Tracker
         print("PSM: Loading FLTR")
