@@ -1,7 +1,7 @@
 import os
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtGui import QIcon, QColor, QPixmap, QGuiApplication
-
+from PyQt6.QtGui import QIcon, QColor, QPixmap, QGuiApplication, QStyleHints
+from qt_material import apply_stylesheet
 import sys
 import PSMresources
 
@@ -37,6 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Prun Shipment Manager [PSM]")
 
         # Load the PDM
+        print("PSM: Loading PDM")
         self.PDM = DataManager({
             "ConfigPath": "PSM.cfg",
             "QtStatusBar": (self.statusBar(),0),
@@ -48,10 +49,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(icon)
 
         # Load the DSC
+        print("PSM: Loading DSC")
         self.DSCWidget = DSCWidget(self.PDM)
         self.setCentralWidget(self.DSCWidget)
 
         # Load the Fleet Tracker
+        print("PSM: Loading FLTR")
         self.FleetTracker = FleetTracker(self.PDM)
         self.FleetTracker.show()
 
@@ -73,6 +76,9 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
     main.show()
+    app.setStyle('Fusion')
+    #apply_stylesheet(app, theme='dark_medical.xml')
+    #app.palette().setCurrentColorGroup(QColor.darker())
     code = app.exec()
     ()
     sys.exit(code)
