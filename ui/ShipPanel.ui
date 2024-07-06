@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>997</width>
+    <width>763</width>
     <height>351</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Ship Panel</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="spacing">
@@ -84,6 +84,9 @@
         </property>
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <property name="midLineWidth">
+         <number>0</number>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <property name="spacing">
@@ -378,6 +381,15 @@
                  <property name="toolTip">
                   <string>Vessel Location</string>
                  </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Raised</enum>
+                 </property>
+                 <property name="lineWidth">
+                  <number>2</number>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -452,6 +464,9 @@
                  <property name="toolTip">
                   <string>Time to Arrival</string>
                  </property>
+                 <property name="locale">
+                  <locale language="English" country="World"/>
+                 </property>
                  <property name="wrapping">
                   <bool>false</bool>
                  </property>
@@ -469,6 +484,9 @@
                  </property>
                  <property name="specialValueText">
                   <string/>
+                 </property>
+                 <property name="accelerated">
+                  <bool>false</bool>
                  </property>
                  <property name="keyboardTracking">
                   <bool>false</bool>

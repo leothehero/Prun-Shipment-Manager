@@ -1,5 +1,5 @@
 from PyQt6 import uic
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget, QFrame
 from PyQt6.QtCore import QDateTime, QTimer
 
 import os
@@ -11,6 +11,7 @@ def decodeLocation(location):
     return system, subLocation
 
 class ShipPanel(QWidget):
+    # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
     def __init__(self,shipInfo, PDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
         super().__init__()
         self.PDM = PDM
@@ -27,17 +28,20 @@ class ShipPanel(QWidget):
         self.destinationLabel.setText(destination)
 
         location = "*Location Unavailable*"
+        self.arrivalTime.setFrame(True)
         if "Location" in shipInfo:
-            if shipInfo["Location"] == '':
+            if shipInfo["Location"] == '':  # Ship is in transit
                 location = "**Traversing the Void**"
-            else:
+            else: # Ship has arrived at a Location
+                self.arrivalTime.setFrame(False)
+                self.locationLabel.setFrameShape(QFrame.Shape.Box)
                 self.timer = QTimer(self)
                 self.timer.timeout.connect(self.showTime)
                 self.timer.start(1000)
                 self.showTime()
                 system, subLocation = decodeLocation(shipInfo["Location"])
                 location = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
-                location = "__"+location+"__"
+                #location = "<mark>"+location+"</mark>"
         self.locationLabel.setText(location)
         userData = self.PDM.getUserInfo(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
         username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
