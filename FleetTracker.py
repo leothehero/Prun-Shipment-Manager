@@ -1,14 +1,24 @@
 from PyQt6 import uic
-from PyQt6.QtWidgets import QWidget, QFrame
+from PyQt6.QtWidgets import QWidget, QFrame, QDialog
 from PyQt6.QtCore import QDateTime, QTimer
 
 import os
 
-def decodeLocation(location):
+def decodeLocation(location): # TODO: Move to PDM
     system, subLocation = location.split(" - ")
     system = system.rsplit(" ",1)
     subLocation = subLocation.rsplit(" ",1)
     return system, subLocation
+
+class ShipDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        cur_dir = os.path.dirname(__file__)
+        uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
+        
+        
+        
+        raise NotImplementedError
 
 class ShipPanel(QWidget):
     # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
@@ -59,7 +69,7 @@ class ShipPanel(QWidget):
             time.setMSecsSinceEpoch(shipInfo["ArrivalTimeEpochMs"])
             self.arrivalTime.setDateTime(time)
 
-        self.configureWidget.hide()
+        #self.configureWidget.hide()
     
     def toggleEditMode(self,state):
         self.configureWidget.setVisible(state)
@@ -109,7 +119,6 @@ class FleetTracker(QWidget):
         for transponder in self.trackedShips:
             self.shipDisplayPanels[transponder] = ShipPanel(self.PDM.getShipData(transponder),self.PDM)
             self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
-            self.configureButton.toggled.connect(self.shipDisplayPanels[transponder].toggleEditMode)
     
     def configureToggle(self,state):
         print(("Entering" if state else "Exiting")+" Fleet Configuration Mode")

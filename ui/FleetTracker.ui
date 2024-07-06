@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>FleetTrackerWidget</class>
+ <widget class="QWidget" name="FleetTrackerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -24,12 +24,24 @@
     <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
    </property>
    <item>
-    <widget class="QPushButton" name="configureButton">
+    <widget class="QPushButton" name="addButton">
      <property name="text">
-      <string>Configure</string>
+      <string>Add Ship</string>
+     </property>
+     <property name="shortcut">
+      <string>Ctrl+Space</string>
      </property>
      <property name="checkable">
-      <bool>true</bool>
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -65,10 +77,10 @@
  <resources/>
  <connections>
   <connection>
-   <sender>configureButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>Form</receiver>
-   <slot>configureToggle()</slot>
+   <sender>addButton</sender>
+   <signal>clicked()</signal>
+   <receiver>FleetTrackerWidget</receiver>
+   <slot>addShip()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>464</x>
@@ -76,12 +88,13 @@
     </hint>
     <hint type="destinationlabel">
      <x>464</x>
-     <y>200</y>
+     <y>210</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>configureToggle()</slot>
+  <slot>addShip()</slot>
  </slots>
 </ui>
