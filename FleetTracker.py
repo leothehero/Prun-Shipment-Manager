@@ -1,6 +1,7 @@
 from PyQt6 import uic
 from PyQt6.QtWidgets import QWidget, QFrame, QDialog
 from PyQt6.QtCore import QDateTime, QTimer
+from PyQt6.QtGui import QValidator
 
 import os
 
@@ -10,12 +11,26 @@ def decodeLocation(location): # TODO: Move to PDM
     subLocation = subLocation.rsplit(" ",1)
     return system, subLocation
 
+class LocationValidator(QValidator):
+    def __init__(self,PDM):
+        self.PDM = PDM
+    
+    def validate(self,string,int):
+
+        raise NotImplementedError
+
 
 class ShipDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         cur_dir = os.path.dirname(__file__)
-        uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
+        uic.loadUi(cur_dir+'/ui/ShipDialog.ui', self)
+        self.routeAddBox.setValidator(LocationValidator(parent.PDM))
+    
+    def loadData(self, shipInfo):
+        self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
+        self.shipUsernameEdit.setText(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
+
 
 
 class ShipPanel(QWidget):
@@ -37,6 +52,13 @@ class ShipPanel(QWidget):
         self.setStorageBars()
         self.setArrivalTime()
 
+    def modifyEntry(self):
+        print("SP: Modifying Entry of ship "+self.registration)
+        dialog = ShipDialog(self)
+        dialog.loadData(self.shipInfo)
+        dialog.exec()
+
+        return
 
     def setArrivalTime(self):
         if "ArrivalTimeEpochMs" in self.shipInfo:
@@ -95,11 +117,8 @@ class ShipPanel(QWidget):
         #self.routeLabel.setFrameShape(QFrame.Shape.Panel if state else QFrame.Shape.NoFrame)
         #self.routeLabel.released.connect(self.modifyRoute) if state else self.routeLabel.released.disconnect(self.modifyRoute)
     
-    def modifyRoute(self):
-        print("Modifying Route of Ship "+self.registration)
-
     def deleteEntry(self):
-        print("Deleting Ship Entry "+self.registration)
+        print("SP: Deleting Entry of Ship "+self.registration)
 
     def showTime(self):
             time = QDateTime.currentDateTime()
@@ -133,6 +152,11 @@ class FleetTracker(QWidget):
                 usernames.append(self.trackedShips[transponder]["Username"])
         usernames = set(usernames)
         self.PDM.fetchFleetsByUsers(usernames)
+    
+    def addShip(self):
+        dialog = ShipDialog(self)
+        dialog.exec()
+        ships = self.PDM.getAppData("ships") or {}
 
     def displayShips(self):
         for transponder in self.trackedShips:

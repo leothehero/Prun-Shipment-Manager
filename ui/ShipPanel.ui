@@ -621,8 +621,8 @@
    <slot>deleteEntry()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>982</x>
-     <y>174</y>
+     <x>762</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>498</x>
@@ -630,8 +630,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>editButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ShipInfoPanel</receiver>
+   <slot>modifyEntry()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>748</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>deleteEntry()</slot>
+  <slot>modifyEntry()</slot>
  </slots>
 </ui>
