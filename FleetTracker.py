@@ -10,37 +10,71 @@ def decodeLocation(location): # TODO: Move to PDM
     subLocation = subLocation.rsplit(" ",1)
     return system, subLocation
 
+
 class ShipDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
-        
-        
-        
-        raise NotImplementedError
+
 
 class ShipPanel(QWidget):
     # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
     def __init__(self,shipInfo, PDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
         super().__init__()
         self.PDM = PDM
-        self.registration = shipInfo["Registration"]
+        self.shipInfo = shipInfo
+        self.registration = self.shipInfo["Registration"]
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
-        self.nameLabel.setText(shipInfo["Name"] if "Name" in shipInfo else "*Name Unavailable*")
-        self.transponderLabel.setText(shipInfo["Registration"] if "Registration" in shipInfo else "*Registration Unavailable*")
-        
+
+        self.setNameLabel()
+        self.setTransponderLabel()
+        self.setDestinationLabel()
+        self.setLocationLabel()
+        self.setUsernameLabel()
+
+        self.setStorageBars()
+        self.setArrivalTime()
+
+
+    def setArrivalTime(self):
+        if "ArrivalTimeEpochMs" in self.shipInfo:
+            #self.arrivalTime.setDisplayFormat("HH:mm dddd")
+            time = QDateTime()
+            time.setMSecsSinceEpoch(self.shipInfo["ArrivalTimeEpochMs"])
+            self.arrivalTime.setDateTime(time)
+
+    def setStorageBars(self):
+        if "Storage" in self.shipInfo:
+            self.weightBar.setMaximum(int(round(self.shipInfo["Storage"]["WeightCapacity"],0)))
+            self.weightBar.setValue(int(round(self.shipInfo["Storage"]["WeightLoad"],0)))
+            self.volumeBar.setMaximum(int(round(self.shipInfo["Storage"]["VolumeCapacity"],0)))
+            self.volumeBar.setValue(int(round(self.shipInfo["Storage"]["VolumeLoad"],0)))
+
+    def setUsernameLabel(self):
+        userData = self.PDM.getUserInfo(self.shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in self.shipInfo else "")
+        username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
+        self.usernameLabel.setText(username)
+
+    def setNameLabel(self):
+        self.nameLabel.setText(self.shipInfo["Name"] if "Name" in self.shipInfo else "*Name Unavailable*")
+
+    def setTransponderLabel(self):
+        self.transponderLabel.setText(self.shipInfo["Registration"] if "Registration" in self.shipInfo else "*Registration Unavailable*")
+
+    def setDestinationLabel(self):
         destination = "*Destination Unavailable*"
-        if "Destination" in shipInfo:
-            system, subLocation = decodeLocation(shipInfo["Destination"])
+        if "Destination" in self.shipInfo:
+            system, subLocation = decodeLocation(self.shipInfo["Destination"])
             destination = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
         self.destinationLabel.setText(destination)
 
+    def setLocationLabel(self):
         location = "*Location Unavailable*"
         self.arrivalTime.setFrame(True)
-        if "Location" in shipInfo:
-            if shipInfo["Location"] == '':  # Ship is in transit
+        if "Location" in self.shipInfo:
+            if self.shipInfo["Location"] == '':  # Ship is in transit
                 location = "**Traversing the Void**"
             else: # Ship has arrived at a Location
                 self.arrivalTime.setFrame(False)
@@ -49,25 +83,10 @@ class ShipPanel(QWidget):
                 self.timer.timeout.connect(self.showTime)
                 self.timer.start(1000)
                 self.showTime()
-                system, subLocation = decodeLocation(shipInfo["Location"])
+                system, subLocation = decodeLocation(self.shipInfo["Location"])
                 location = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
                 #location = "<mark>"+location+"</mark>"
         self.locationLabel.setText(location)
-        userData = self.PDM.getUserInfo(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
-        username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
-        self.usernameLabel.setText(username)
-
-        if "Storage" in shipInfo:
-            self.weightBar.setMaximum(int(round(shipInfo["Storage"]["WeightCapacity"],0)))
-            self.weightBar.setValue(int(round(shipInfo["Storage"]["WeightLoad"],0)))
-            self.volumeBar.setMaximum(int(round(shipInfo["Storage"]["VolumeCapacity"],0)))
-            self.volumeBar.setValue(int(round(shipInfo["Storage"]["VolumeLoad"],0)))
-
-        if "ArrivalTimeEpochMs" in shipInfo:
-            #self.arrivalTime.setDisplayFormat("HH:mm dddd")
-            time = QDateTime()
-            time.setMSecsSinceEpoch(shipInfo["ArrivalTimeEpochMs"])
-            self.arrivalTime.setDateTime(time)
 
         #self.configureWidget.hide()
     
