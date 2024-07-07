@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>408</width>
-    <height>438</height>
+    <height>308</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,47 +19,10 @@
   <property name="layoutDirection">
    <enum>Qt::LayoutDirection::LeftToRight</enum>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="dialogDescriptorLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LayoutDirection::LeftToRight</enum>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="midLineWidth">
-      <number>0</number>
-     </property>
-     <property name="text">
-      <string>**Customise Vessel Entry**</string>
-     </property>
-     <property name="textFormat">
-      <enum>Qt::TextFormat::MarkdownText</enum>
-     </property>
-     <property name="scaledContents">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::TextInteractionFlag::NoTextInteraction</set>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QWidget" name="lineEditContainer" native="true">
      <property name="sizePolicy">
@@ -154,8 +120,14 @@
         <property name="toolTipDuration">
          <number>-1</number>
         </property>
+        <property name="cursorPosition">
+         <number>0</number>
+        </property>
         <property name="placeholderText">
          <string>Add Route Destinations</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -205,7 +177,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Apply|QDialogButtonBox::StandardButton::Cancel</set>
      </property>
      <property name="centerButtons">
       <bool>false</bool>

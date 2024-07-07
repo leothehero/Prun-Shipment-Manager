@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>763</width>
-    <height>351</height>
+    <height>174</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -512,6 +512,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="mouseTracking">
+               <bool>false</bool>
               </property>
               <property name="toolTip">
                <string>Vessel Route</string>

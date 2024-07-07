@@ -3,7 +3,8 @@ from PyQt6.QtWidgets import QWidget, QFrame, QDialog
 from PyQt6.QtCore import QDateTime, QTimer
 from PyQt6.QtGui import QValidator
 
-import os
+import os, re
+
 
 def decodeLocation(location): # TODO: Move to PDM
     system, subLocation = location.split(" - ")
@@ -13,25 +14,34 @@ def decodeLocation(location): # TODO: Move to PDM
 
 class LocationValidator(QValidator):
     def __init__(self,PDM):
+        super().__init__()
         self.PDM = PDM
     
-    def validate(self,string,int):
+    def validate(self,stringArg,intArg):
+        tmpStr = re.split(r'[,;]',stringArg)
+        valid = True
+        for i in range(len(tmpStr)):
+            tmpStr[i] = tmpStr[i].strip()
+            valid = valid and self.PDM.isLocation(tmpStr[i])
 
-        raise NotImplementedError
+        print(tmpStr, valid)
+        return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, stringArg, intArg
 
 
 class ShipDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, PDM, parent=None):
         super().__init__(parent)
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipDialog.ui', self)
-        self.routeAddBox.setValidator(LocationValidator(parent.PDM))
-    
+        self.routeAddBox.setValidator(LocationValidator(PDM))
+        self.shipTransponderEdit.setFocus()
+
     def loadData(self, shipInfo):
         self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
         self.shipUsernameEdit.setText(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
 
-
+def handler(self): # THIS WORKS!!!
+    print("test")
 
 class ShipPanel(QWidget):
     # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
@@ -51,10 +61,12 @@ class ShipPanel(QWidget):
 
         self.setStorageBars()
         self.setArrivalTime()
+        
+        self.routeLabel.mousePressEvent = handler # THIS WORKS!!!
 
     def modifyEntry(self):
         print("SP: Modifying Entry of ship "+self.registration)
-        dialog = ShipDialog(self)
+        dialog = ShipDialog(self.PDM, self)
         dialog.loadData(self.shipInfo)
         dialog.exec()
 
@@ -130,13 +142,15 @@ class FleetTracker(QWidget):
     trackedShips = {}
     shipDisplayPanels = {}
 
-    def __init__(self,PDM):
-        super().__init__()
+    def __init__(self, PDM, parent=None):
+        super().__init__(parent)
         self.PDM = PDM
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/FleetTracker.ui', self)
         self.loadShips()
         self.displayShips()
+        PDM.fetchPlanetNameData()
+        PDM.fetchStationData()
     
     def loadShips(self):
         ships = self.PDM.getAppData("ships")
@@ -154,9 +168,9 @@ class FleetTracker(QWidget):
         self.PDM.fetchFleetsByUsers(usernames)
     
     def addShip(self):
-        dialog = ShipDialog(self)
+        dialog = ShipDialog(self.PDM, self)
         dialog.exec()
-        ships = self.PDM.getAppData("ships") or {}
+        #ships = self.PDM.getAppData("ships") or {}
 
     def displayShips(self):
         for transponder in self.trackedShips:
