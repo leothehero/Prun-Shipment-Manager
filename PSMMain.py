@@ -57,7 +57,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.FleetTracker = FleetTracker(self.PDM)
         self.FleetTracker.show()
 
-        print("PSM: MainWindow initialization complete")
+        print("PSM: Main Window initialization complete")
     
     def getColouredIcon(self,resourceLocator,color='black'): 
         pixmap = QPixmap(resourceLocator)
