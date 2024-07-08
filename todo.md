@@ -1,0 +1,2 @@
+- Create user contract material delta tracker (Possibly for future contract manager)
+- Create PDM function that returns the game-format of the location string you used (turns hrt -> HRT)
