@@ -143,7 +143,7 @@
          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
         </property>
         <property name="editTriggers">
-         <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+         <set>QAbstractItemView::EditTrigger::DoubleClicked</set>
         </property>
         <property name="tabKeyNavigation">
          <bool>true</bool>
@@ -156,6 +156,12 @@
         </property>
         <property name="defaultDropAction">
          <enum>Qt::DropAction::MoveAction</enum>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="uniformItemSizes">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -195,8 +201,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>227</x>
-     <y>419</y>
+     <x>236</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -211,8 +217,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>425</y>
+     <x>304</x>
+     <y>298</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -220,5 +226,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>routeAddBox</sender>
+   <signal>returnPressed()</signal>
+   <receiver>Dialog</receiver>
+   <slot>addLocations()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>117</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>810</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>addLocations()</slot>
+ </slots>
 </ui>

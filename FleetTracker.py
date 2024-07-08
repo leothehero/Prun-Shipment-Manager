@@ -1,6 +1,6 @@
 from PyQt6 import uic
-from PyQt6.QtWidgets import QWidget, QFrame, QDialog
-from PyQt6.QtCore import QDateTime, QTimer
+from PyQt6.QtWidgets import QWidget, QFrame, QDialog, QListWidgetItem
+from PyQt6.QtCore import QDateTime, QTimer, Qt
 from PyQt6.QtGui import QValidator
 
 import os, re
@@ -18,14 +18,16 @@ class LocationValidator(QValidator):
         self.PDM = PDM
     
     def validate(self,stringArg,intArg):
+        tmpStr, valid = self.format(stringArg)
+        return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, stringArg, intArg
+
+    def format(self, stringArg):
         tmpStr = re.split(r'[,;]',stringArg)
         valid = True
         for i in range(len(tmpStr)):
             tmpStr[i] = tmpStr[i].strip()
             valid = valid and self.PDM.isLocation(tmpStr[i])
-
-        print(tmpStr, valid)
-        return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, stringArg, intArg
+        return tmpStr,valid
 
 
 class ShipDialog(QDialog):
@@ -33,12 +35,33 @@ class ShipDialog(QDialog):
         super().__init__(parent)
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipDialog.ui', self)
-        self.routeAddBox.setValidator(LocationValidator(PDM))
+        self.validator = LocationValidator(PDM)
+        self.routeAddBox.setValidator(self.validator)
         self.shipTransponderEdit.setFocus()
 
     def loadData(self, shipInfo):
         self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
         self.shipUsernameEdit.setText(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
+        self.routeList.addItems(shipInfo["Route"] if "Route" in shipInfo else ())
+        self.setItemsEditable()
+    
+    def addLocations(self):
+        tmpStr, valid = self.validator.format(self.routeAddBox.text())
+        if not valid:
+            raise ValueError
+        self.routeList.addItems(tmpStr)
+        self.setItemsEditable()
+        self.routeAddBox.clear()
+    
+    def getRouteListItems(self):
+        items = []
+        for i in range(self.routeList.count()):
+            items.append(self.routeList.item(i))
+        return items
+
+    def setItemsEditable(self):
+        for item in self.getRouteListItems():
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
 
 def handler(self): # THIS WORKS!!!
     print("test")
