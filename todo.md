@@ -1,11 +1,11 @@
 # FLTR
 - Create user contract material delta tracker (Possibly for future contract manager)
-- Implement Auto-formatting where relevant
+- ~~Implement Auto-formatting where relevant~~
 - Implement ability to delete items from route (or clear route)
 - Finalise Route Dialog Functionality
 
 # PDM
-- ~~Create PDM function that returns the game-format of the location string you used (turns hrt -> HRT)~~
+- ~~Create function that returns the game-format of the location string you used (turns hrt -> HRT)~~
 
 # DSC
 - Show Total tonnage and volume of currently loaded shipment

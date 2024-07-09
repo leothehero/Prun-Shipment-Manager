@@ -1,5 +1,5 @@
 from PyQt6 import uic
-from PyQt6.QtWidgets import QWidget, QFrame, QDialog, QListWidgetItem
+from PyQt6.QtWidgets import QWidget, QFrame, QDialog
 from PyQt6.QtCore import QDateTime, QTimer, Qt
 from PyQt6.QtGui import QValidator
 
@@ -19,6 +19,16 @@ class LocationValidator(QValidator):
     
     def validate(self,stringArg,intArg):
         tmpStr, valid = self.format(stringArg)
+        #NOTE: Temporary Idea for autoformatting, remove or optimise if the performance cost is exorbitant.
+        if valid:
+            for i in range(len(tmpStr)):
+                if self.PDM.isStation(tmpStr[i])[0]:
+                    tmpStr[i] = self.PDM.getStationNameFormat(tmpStr[i])
+                elif True in self.PDM.isPlanet(tmpStr[i]):
+                    tmpStr[i] = self.PDM.getPlanetNameFormat(tmpStr[i])
+            stringArg = ", ".join(tmpStr)
+
+
         return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, stringArg, intArg
 
     def format(self, stringArg):
@@ -39,18 +49,27 @@ class ShipDialog(QDialog):
         self.routeAddBox.setValidator(self.validator)
         self.shipTransponderEdit.setFocus()
 
+    def showEvent(self, event):
+        QDialog.showEvent(self, event)
+        for button in self.buttonBox.buttons():
+            button.setAutoDefault(False)
+            button.setDefault(False)
+
+
     def loadData(self, shipInfo):
         self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
         self.shipUsernameEdit.setText(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
         self.routeList.addItems(shipInfo["Route"] if "Route" in shipInfo else ())
         self.setItemsEditable()
-    
+        #self.routeList.connect
+
+
     def addLocations(self):
         tmpStr, valid = self.validator.format(self.routeAddBox.text())
         if not valid:
             raise ValueError
         self.routeList.addItems(tmpStr)
-        self.setItemsEditable()
+        #self.setItemsEditable()
         self.routeAddBox.clear()
     
     def getRouteListItems(self):
@@ -91,8 +110,7 @@ class ShipPanel(QWidget):
         print("SP: Modifying Entry of ship "+self.registration)
         dialog = ShipDialog(self.PDM, self)
         dialog.loadData(self.shipInfo)
-        dialog.exec()
-
+        dialog.open()
         return
 
     def setArrivalTime(self):
@@ -144,14 +162,7 @@ class ShipPanel(QWidget):
                 location = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
                 #location = "<mark>"+location+"</mark>"
         self.locationLabel.setText(location)
-
-        #self.configureWidget.hide()
-    
-    def toggleEditMode(self,state):
-        self.configureWidget.setVisible(state)
-        #self.routeLabel.setFrameShape(QFrame.Shape.Panel if state else QFrame.Shape.NoFrame)
-        #self.routeLabel.released.connect(self.modifyRoute) if state else self.routeLabel.released.disconnect(self.modifyRoute)
-    
+        
     def deleteEntry(self):
         print("SP: Deleting Entry of Ship "+self.registration)
 
@@ -192,7 +203,7 @@ class FleetTracker(QWidget):
     
     def addShip(self):
         dialog = ShipDialog(self.PDM, self)
-        dialog.exec()
+        dialog.open()
         #ships = self.PDM.getAppData("ships") or {}
 
     def displayShips(self):
