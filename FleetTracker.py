@@ -5,6 +5,8 @@ from PyQt6.QtGui import QValidator
 
 import os, re
 
+from PrunPythonTools import PRUNDataManager
+
 
 def decodeLocation(location): # TODO: Move to PDM
     system, subLocation = location.split(" - ")
@@ -17,7 +19,7 @@ class LocationValidator(QValidator):
         super().__init__()
         self.PDM = PDM
     
-    def validate(self,stringArg,intArg):
+    def validate(self,stringArg: str,intArg: str) -> tuple[QValidator.State]:
         tmpStr, valid = self.format(stringArg)
         #NOTE: Temporary Idea for autoformatting, remove or optimise if the performance cost is exorbitant.
         if valid:
@@ -27,11 +29,9 @@ class LocationValidator(QValidator):
                 elif True in self.PDM.isPlanet(tmpStr[i]):
                     tmpStr[i] = self.PDM.getPlanetNameFormat(tmpStr[i])
             stringArg = ", ".join(tmpStr)
-
-
         return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, stringArg, intArg
 
-    def format(self, stringArg):
+    def format(self, stringArg: str) -> tuple[list[str] , bool]:
         tmpStr = re.split(r'[,;]',stringArg)
         valid = True
         for i in range(len(tmpStr)):
@@ -49,14 +49,12 @@ class ShipDialog(QDialog):
         self.routeAddBox.setValidator(self.validator)
         self.shipTransponderEdit.setFocus()
 
-    def showEvent(self, event):
-        QDialog.showEvent(self, event)
+    def showEvent(self, event): # This prevents any button from being a default button
         for button in self.buttonBox.buttons():
             button.setAutoDefault(False)
             button.setDefault(False)
 
-
-    def loadData(self, shipInfo):
+    def loadData(self, shipInfo: dict):
         self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
         self.shipUsernameEdit.setText(shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in shipInfo else "")
         self.routeList.addItems(shipInfo["Route"] if "Route" in shipInfo else ())
@@ -86,6 +84,8 @@ def handler(self): # THIS WORKS!!!
     print("test")
 
 class ShipPanel(QWidget):
+    modified = False
+    dateTimeFormat = "hh:mm   dddd"
     # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
     def __init__(self,shipInfo, PDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
         super().__init__()
@@ -94,6 +94,7 @@ class ShipPanel(QWidget):
         self.registration = self.shipInfo["Registration"]
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
+        self.arrivalTime = QDateTime()
 
         self.setNameLabel()
         self.setTransponderLabel()
@@ -108,17 +109,37 @@ class ShipPanel(QWidget):
 
     def modifyEntry(self):
         print("SP: Modifying Entry of ship "+self.registration)
-        dialog = ShipDialog(self.PDM, self)
-        dialog.loadData(self.shipInfo)
-        dialog.open()
+        self.dialog = ShipDialog(self.PDM, self)
+        self.dialog.loadData(self.shipInfo)
+        self.dialog.open()
+        self.dialog.accepted.connect(self.acceptDialog)
+        return
+    
+    def acceptDialog(self):
+        items = self.dialog.getRouteListItems()
+        routeItems = []
+        for item in items:
+            routeItems.append(item.text())
+        self.shipInfo["Route"] = routeItems
+        self.updateRouteDisplay()
+        self.modified = True # TODO: Change this to just call a parent update function. Reuse between this and the Parent acceptDialog()
+
+    def updateRouteDisplay(self):
+        if "Route" not in self.shipInfo or len(self.shipInfo["Route"]) == 0:
+            self.routeLabel.setText("No **Route** Set")
+            return
+        contents = " -> ".join(self.shipInfo["Route"]) + " -> ..."
+        self.routeLabel.setText(contents)
         return
 
     def setArrivalTime(self):
         if "ArrivalTimeEpochMs" in self.shipInfo:
             #self.arrivalTime.setDisplayFormat("HH:mm dddd")
             time = QDateTime()
-            time.setMSecsSinceEpoch(self.shipInfo["ArrivalTimeEpochMs"])
-            self.arrivalTime.setDateTime(time)
+            self.arrivalTime.setMSecsSinceEpoch(self.shipInfo["ArrivalTimeEpochMs"])
+            text = self.arrivalTime.toString(self.dateTimeFormat)
+            self.arrivalLabel.setText(text)
+
 
     def setStorageBars(self):
         if "Storage" in self.shipInfo:
@@ -147,17 +168,12 @@ class ShipPanel(QWidget):
 
     def setLocationLabel(self):
         location = "*Location Unavailable*"
-        self.arrivalTime.setFrame(True)
         if "Location" in self.shipInfo:
             if self.shipInfo["Location"] == '':  # Ship is in transit
                 location = "**Traversing the Void**"
             else: # Ship has arrived at a Location
-                self.arrivalTime.setFrame(False)
+                self.arrivalLabel.setText("**Arrived**")
                 self.locationLabel.setFrameShape(QFrame.Shape.Box)
-                self.timer = QTimer(self)
-                self.timer.timeout.connect(self.showTime)
-                self.timer.start(1000)
-                self.showTime()
                 system, subLocation = decodeLocation(self.shipInfo["Location"])
                 location = subLocation[0] if len(system) == 1 else (system[0] + " - " + subLocation[0].title())
                 #location = "<mark>"+location+"</mark>"
@@ -165,8 +181,9 @@ class ShipPanel(QWidget):
         
     def deleteEntry(self):
         print("SP: Deleting Entry of Ship "+self.registration)
+        raise NotImplementedError
 
-    def showTime(self):
+    def showTime(self): # Unused
             time = QDateTime.currentDateTime()
             self.arrivalTime.setDateTime(time)
 
@@ -176,17 +193,18 @@ class FleetTracker(QWidget):
     trackedShips = {}
     shipDisplayPanels = {}
 
-    def __init__(self, PDM, parent=None):
+    def __init__(self, PDM: PRUNDataManager.DataManager, parent=None): 
         super().__init__(parent)
         self.PDM = PDM
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/FleetTracker.ui', self)
         self.loadShips()
         self.displayShips()
-        PDM.fetchPlanetNameData()
+        PDM.fetchPlanetNameData() # TODO: switch to initX methods
         PDM.fetchStationData()
+        PDM.fetchUserList()
     
-    def loadShips(self):
+    def loadShips(self) -> bool: 
         ships = self.PDM.getAppData("ships")
         if not ships:
             return False # TODO: Raise this error higher
@@ -200,16 +218,27 @@ class FleetTracker(QWidget):
                 usernames.append(self.trackedShips[transponder]["Username"])
         usernames = set(usernames)
         self.PDM.fetchFleetsByUsers(usernames)
+        return True
     
     def addShip(self):
-        dialog = ShipDialog(self.PDM, self)
-        dialog.open()
-        #ships = self.PDM.getAppData("ships") or {}
+        self.dialog = ShipDialog(self.PDM, self)
+        self.dialog.open()
+        self.dialog.accepted.connect(self.acceptDialog)
 
     def displayShips(self):
         for transponder in self.trackedShips:
-            self.shipDisplayPanels[transponder] = ShipPanel(self.PDM.getShipData(transponder),self.PDM)
+            shipData = self.PDM.getShipData(transponder)
+            if not shipData:
+                shipData = {
+                    "Registration": transponder,
+                    "UserNameSubmitted": self.trackedShips[transponder]["Username"]
+                }
+            self.shipDisplayPanels[transponder] = ShipPanel(shipData,self.PDM)
             self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
     
-    def configureToggle(self,state):
-        print(("Entering" if state else "Exiting")+" Fleet Configuration Mode")
+    def acceptDialog(self):
+        items = self.dialog.getRouteListItems()
+        routeItems = []
+        for item in items:
+            routeItems.append(item.text())
+        # Create verification function to make sure the resultant fields are valid!
