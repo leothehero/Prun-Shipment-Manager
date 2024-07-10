@@ -1,11 +1,11 @@
 from PyQt6 import uic
-from PyQt6.QtWidgets import QWidget, QFrame, QDialog
+from PyQt6.QtWidgets import QWidget, QFrame, QDialog, QDialogButtonBox
 from PyQt6.QtCore import QDateTime, QTimer, Qt
 from PyQt6.QtGui import QValidator
 
 import os, re
 
-from PrunPythonTools import PRUNDataManager
+from PrunPythonTools.PRUNDataManager import DataManager as PrUnDM
 
 
 def decodeLocation(location): # TODO: Move to PDM
@@ -15,11 +15,11 @@ def decodeLocation(location): # TODO: Move to PDM
     return system, subLocation
 
 class LocationValidator(QValidator):
-    def __init__(self,PDM):
+    def __init__(self, PDM:PrUnDM):
         super().__init__()
         self.PDM = PDM
     
-    def validate(self,stringArg: str,intArg: str) -> tuple[QValidator.State]:
+    def validate(self,stringArg: str,intArg: str) -> tuple[QValidator.State, str, int]:
         tmpStr, valid = self.format(stringArg)
         #NOTE: Temporary Idea for autoformatting, remove or optimise if the performance cost is exorbitant.
         if valid:
@@ -39,20 +39,34 @@ class LocationValidator(QValidator):
             valid = valid and self.PDM.isLocation(tmpStr[i])
         return tmpStr,valid
 
+class UserValidator(QValidator):
+    def __init__(self, PDM:PrUnDM):
+        super().__init__()
+        self.PDM = PDM
+
+    def validate(self,stringArg: str,intArg: str) -> tuple[QValidator.State, str, int]:
+        tmpStr = stringArg.strip()
+        valid, formattedUsername = self.PDM.isUser(tmpStr)
+        return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, formattedUsername, intArg
 
 class ShipDialog(QDialog):
     def __init__(self, PDM, parent=None):
         super().__init__(parent)
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipDialog.ui', self)
-        self.validator = LocationValidator(PDM)
-        self.routeAddBox.setValidator(self.validator)
+        self.lValidator = LocationValidator(PDM)
+        self.uValidator = UserValidator(PDM)
+        self.routeAddBox.setValidator(self.lValidator)
+        self.shipUsernameEdit.setValidator(self.uValidator)
         self.shipTransponderEdit.setFocus()
 
     def showEvent(self, event): # This prevents any button from being a default button
         for button in self.buttonBox.buttons():
             button.setAutoDefault(False)
             button.setDefault(False)
+            if self.buttonBox.buttonRole(button) == QDialogButtonBox.ButtonRole.AcceptRole:
+                button.setEnabled(False)
+                self.okButton = button
 
     def loadData(self, shipInfo: dict):
         self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
@@ -60,7 +74,6 @@ class ShipDialog(QDialog):
         self.routeList.addItems(shipInfo["Route"] if "Route" in shipInfo else ())
         self.setItemsEditable()
         #self.routeList.connect
-
 
     def addLocations(self):
         tmpStr, valid = self.validator.format(self.routeAddBox.text())
@@ -87,7 +100,7 @@ class ShipPanel(QWidget):
     modified = False
     dateTimeFormat = "hh:mm   dddd"
     # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
-    def __init__(self,shipInfo, PDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
+    def __init__(self,shipInfo: dict, PDM: PrUnDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
         super().__init__()
         self.PDM = PDM
         self.shipInfo = shipInfo
@@ -140,7 +153,6 @@ class ShipPanel(QWidget):
             text = self.arrivalTime.toString(self.dateTimeFormat)
             self.arrivalLabel.setText(text)
 
-
     def setStorageBars(self):
         if "Storage" in self.shipInfo:
             self.weightBar.setMaximum(int(round(self.shipInfo["Storage"]["WeightCapacity"],0)))
@@ -149,8 +161,9 @@ class ShipPanel(QWidget):
             self.volumeBar.setValue(int(round(self.shipInfo["Storage"]["VolumeLoad"],0)))
 
     def setUsernameLabel(self):
-        userData = self.PDM.getUserInfo(self.shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in self.shipInfo else "")
-        username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
+        valid, username = self.PDM.isUser(self.shipInfo["UserNameSubmitted"] if "UserNameSubmitted" in self.shipInfo else "*Username Unavailable*")
+        #userData = self.PDM.getUserInfo()
+        #username = userData["UserName"] if "UserName" in userData else "*Username Unavailable*"
         self.usernameLabel.setText(username)
 
     def setNameLabel(self):
@@ -193,16 +206,16 @@ class FleetTracker(QWidget):
     trackedShips = {}
     shipDisplayPanels = {}
 
-    def __init__(self, PDM: PRUNDataManager.DataManager, parent=None): 
+    def __init__(self, PDM: PrUnDM, parent=None): 
         super().__init__(parent)
         self.PDM = PDM
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/FleetTracker.ui', self)
-        self.loadShips()
-        self.displayShips()
+        PDM.fetchUserList()
         PDM.fetchPlanetNameData() # TODO: switch to initX methods
         PDM.fetchStationData()
-        PDM.fetchUserList()
+        self.loadShips()
+        self.displayShips()
     
     def loadShips(self) -> bool: 
         ships = self.PDM.getAppData("ships")

@@ -120,24 +120,24 @@
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <property name="spacing">
-             <number>6</number>
+             <number>5</number>
             </property>
             <property name="leftMargin">
-             <number>9</number>
+             <number>5</number>
             </property>
             <property name="topMargin">
-             <number>9</number>
+             <number>5</number>
             </property>
             <property name="rightMargin">
-             <number>9</number>
+             <number>5</number>
             </property>
             <property name="bottomMargin">
-             <number>9</number>
+             <number>5</number>
             </property>
             <item>
              <widget class="QWidget" name="nameWidget" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -161,7 +161,7 @@
                <item>
                 <widget class="QLabel" name="nameLabel">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -195,7 +195,7 @@
                <item>
                 <widget class="QLabel" name="transponderLabel">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -226,7 +226,7 @@
             <item>
              <widget class="QWidget" name="capacityWidget" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -304,6 +304,15 @@
                  <property name="textVisible">
                   <bool>true</bool>
                  </property>
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="invertedAppearance">
+                  <bool>false</bool>
+                 </property>
+                 <property name="textDirection">
+                  <enum>QProgressBar::Direction::TopToBottom</enum>
+                 </property>
                  <property name="format">
                   <string>%vm3/%mm3</string>
                  </property>
@@ -315,7 +324,7 @@
             <item>
              <widget class="QWidget" name="destinationWidget" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -339,7 +348,7 @@
                <item>
                 <widget class="QLabel" name="destinationLabel">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -367,7 +376,7 @@
                <item>
                 <widget class="QLabel" name="locationLabel">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -407,7 +416,7 @@
             <item>
              <widget class="QWidget" name="infoWidget" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -431,7 +440,7 @@
                <item>
                 <widget class="QLabel" name="usernameLabel">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -459,7 +468,7 @@
                <item>
                 <widget class="QLabel" name="arrivalLabel">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
