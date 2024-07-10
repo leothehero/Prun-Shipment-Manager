@@ -457,48 +457,33 @@
                 </widget>
                </item>
                <item>
-                <widget class="QDateTimeEdit" name="arrivalTime">
-                 <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::NoFocus</enum>
+                <widget class="QLabel" name="arrivalLabel">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="toolTip">
-                  <string>Time to Arrival</string>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::Box</enum>
                  </property>
-                 <property name="locale">
-                  <locale language="English" country="World"/>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Sunken</enum>
                  </property>
-                 <property name="wrapping">
+                 <property name="lineWidth">
+                  <number>1</number>
+                 </property>
+                 <property name="text">
+                  <string>*Time Unavailable*</string>
+                 </property>
+                 <property name="textFormat">
+                  <enum>Qt::TextFormat::MarkdownText</enum>
+                 </property>
+                 <property name="scaledContents">
                   <bool>false</bool>
-                 </property>
-                 <property name="frame">
-                  <bool>true</bool>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                 </property>
-                 <property name="specialValueText">
-                  <string/>
-                 </property>
-                 <property name="accelerated">
-                  <bool>false</bool>
-                 </property>
-                 <property name="keyboardTracking">
-                  <bool>false</bool>
-                 </property>
-                 <property name="showGroupSeparator" stdset="0">
-                  <bool>false</bool>
-                 </property>
-                 <property name="currentSection">
-                  <enum>QDateTimeEdit::Section::HourSection</enum>
-                 </property>
-                 <property name="displayFormat">
-                  <string>H:mm:ss dddd</string>
                  </property>
                 </widget>
                </item>
@@ -514,7 +499,7 @@
                </sizepolicy>
               </property>
               <property name="mouseTracking">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="toolTip">
                <string>Vessel Route</string>

@@ -40,7 +40,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.PDM = DataManager({
             "ConfigPath": "PSM.cfg",
             "QtStatusBar": (self.statusBar(),0),
-        }, defaultConfig)
+        }, defaultConfig, 4)
         
 
         # TODO: Fix
@@ -74,7 +74,7 @@ class MainWindow(QtWidgets.QMainWindow):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
-    main.show()
+    # main.show() #NOTE: Disabled For FLTR Testing
     app.setStyle('Fusion')
     code = app.exec()
     ()
