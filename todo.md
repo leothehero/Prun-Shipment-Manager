@@ -2,10 +2,11 @@
 - Create user contract material delta tracker (Possibly for future contract manager)
 - ~~Implement Auto-formatting where relevant~~
 - Implement ability to delete items from route (or clear route)
-- Finalise Route Dialog Functionality
-- Use labels instead of QDateTimeEdit, so that I'm not limited by formatting.
+- ~~Finalise Route Dialog Functionality~~
+- ~~Use labels instead of QDateTimeEdit, so that I'm not limited by formatting.~~
 - Implement countdown toggle for the arrival time
-- Decide on Format Text
+- ~~Decide on Format Text~~
+- Have tool put username into shipdata so that username appears even when userdict could not load.
 
 # PDM
 - ~~Create function that returns the game-format of the location string you used (turns hrt -> HRT)~~
