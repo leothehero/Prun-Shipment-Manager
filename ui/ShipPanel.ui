@@ -397,7 +397,7 @@
                   <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <property name="lineWidth">
-                  <number>2</number>
+                  <number>1</number>
                  </property>
                  <property name="text">
                   <string/>
@@ -473,11 +473,20 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>150</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Time of Arrival</string>
+                 </property>
                  <property name="frameShape">
                   <enum>QFrame::Shape::Box</enum>
                  </property>
                  <property name="frameShadow">
-                  <enum>QFrame::Shadow::Sunken</enum>
+                  <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <property name="lineWidth">
                   <number>1</number>
