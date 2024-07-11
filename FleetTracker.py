@@ -15,6 +15,8 @@ def decodeLocation(location): # TODO: Move to PDM
     return system, subLocation
 
 class LocationValidator(QValidator):
+    valid = False
+    
     def __init__(self, PDM:PrUnDM):
         super().__init__()
         self.PDM = PDM
@@ -40,6 +42,8 @@ class LocationValidator(QValidator):
         return tmpStr,valid
 
 class UserValidator(QValidator):
+    valid = False
+
     def __init__(self, PDM:PrUnDM):
         super().__init__()
         self.PDM = PDM
@@ -47,9 +51,12 @@ class UserValidator(QValidator):
     def validate(self,stringArg: str,intArg: str) -> tuple[QValidator.State, str, int]:
         tmpStr = stringArg.strip()
         valid, formattedUsername = self.PDM.isUser(tmpStr)
+        self.valid = valid
         return QValidator.State.Acceptable if valid else QValidator.State.Intermediate, formattedUsername, intArg
 
 class ShipDialog(QDialog):
+    validRoute = False
+
     def __init__(self, PDM, parent=None):
         super().__init__(parent)
         cur_dir = os.path.dirname(__file__)
@@ -60,13 +67,21 @@ class ShipDialog(QDialog):
         self.shipUsernameEdit.setValidator(self.uValidator)
         self.shipTransponderEdit.setFocus()
 
+    def resetButton(self, button):
+        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ButtonRole.ResetRole:
+            self.routeList.clear()
+
+    def checkValid(self):
+        self.okButton.setEnabled(self.uValidator.valid and len(self.shipTransponderEdit.text())==9)
+
     def showEvent(self, event): # This prevents any button from being a default button
         for button in self.buttonBox.buttons():
             button.setAutoDefault(False)
             button.setDefault(False)
-            if self.buttonBox.buttonRole(button) == QDialogButtonBox.ButtonRole.AcceptRole:
-                button.setEnabled(False)
-                self.okButton = button
+            match self.buttonBox.buttonRole(button):
+                case QDialogButtonBox.ButtonRole.AcceptRole:
+                    button.setEnabled(False)
+                    self.okButton = button
 
     def loadData(self, shipInfo: dict):
         self.shipTransponderEdit.setText(shipInfo["Registration"] if "Registration" in shipInfo else "")
@@ -76,9 +91,10 @@ class ShipDialog(QDialog):
         #self.routeList.connect
 
     def addLocations(self):
-        tmpStr, valid = self.validator.format(self.routeAddBox.text())
+        tmpStr, valid = self.lValidator.format(self.routeAddBox.text())
         if not valid:
             raise ValueError
+        self.validRoute = True
         self.routeList.addItems(tmpStr)
         #self.setItemsEditable()
         self.routeAddBox.clear()
@@ -96,15 +112,103 @@ class ShipDialog(QDialog):
 def handler(self): # THIS WORKS!!!
     print("test")
 
+class FleetTracker(QWidget):
+    trackedShips = {}
+    shipDisplayPanels = {}
+
+    def __init__(self, PDM: PrUnDM, parent=None): 
+        print("FLTR: Initialising")
+        super().__init__(parent)
+        self.PDM = PDM
+        cur_dir = os.path.dirname(__file__)
+        uic.loadUi(cur_dir+'/ui/FleetTracker.ui', self)
+        PDM.fetchUserList()
+        PDM.fetchPlanetNameData() # TODO: switch to initX methods
+        PDM.fetchStationData()
+        self.loadShips()
+        self.displayShips()
+    
+    def loadShips(self) -> bool:
+        print("FLTR: Loading Ships")
+        ships = self.PDM.getAppData("ships")
+        if not ships:
+            return False # TODO: Raise this error higher
+        for transponder in ships:
+            if ships[transponder]["PSMTracked"]:
+                self.trackedShips[transponder] = ships[transponder]
+        usernames = []
+        # the following section grabs all ships that have a username associated from them, and then tells the PDM to load the fleet data of all those users.
+        for transponder in self.trackedShips: #TODO: Move the ship data loading from here to the PDM
+            if "Username" in self.trackedShips[transponder]:
+                usernames.append(self.trackedShips[transponder]["Username"])                
+        usernames = set(usernames)
+        self.PDM.fetchFleetsByUsers(usernames)
+        return True
+    
+    def addShip(self):
+        print("FLTR: Adding New Ship Entry")
+        self.dialog = ShipDialog(self.PDM, self)
+        self.dialog.open()
+        self.dialog.accepted.connect(self.acceptShipDialog)
+
+    def displayShips(self):
+        print("FLTR: Displaying Ships")
+        for transponder in self.trackedShips:
+            shipData = self.PDM.getShipData(transponder)
+            if not shipData:
+                shipData = {
+                    "Registration": transponder,
+                    "UserNameSubmitted": self.trackedShips[transponder]["Username"],
+                }
+            shipData["Route"] = (self.trackedShips[transponder]["Route"] or []) if "Route" in self.trackedShips[transponder] else []
+            self.shipDisplayPanels[transponder] = ShipPanel(shipData,self.PDM, self)
+            self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
+    
+    def acceptShipDialog(self):
+        print("FLTR: New Ship Data Valid. Adding Ship.")
+        return self.createShipEntry(self.dialog)
+
+    def createShipEntry(self, dialog, overwrite=False) -> bool:
+        items = dialog.getRouteListItems()
+        routeItems = []
+        for item in items:
+            routeItems.append(item.text())
+        transponder = dialog.shipTransponderEdit.text().upper()
+        username = dialog.shipUsernameEdit.text()
+        if not overwrite and transponder in self.trackedShips:
+            print("FLTR: Ship registration already in memory! Delete entry first")
+            return False
+        self.trackedShips[transponder] = {
+            "Username": username,
+            "Route": routeItems,
+            "PSMTracked": True,
+        }
+        ships = self.PDM.getAppData("ships")
+        ships.update(self.trackedShips)
+        self.PDM.createAppData("ships")
+        self.PDM.setAppData("ships", ships)
+
+        # TODO: Update Displayed Ships
+        return True
+
+    def closeEvent(self, event):
+        print("FLTR: Closing") 
+        # TODO: Move this save to the update logic instead, so that any changes are immediately reflected in the PDM. 
+        # Otherwise other modules will not be able to use updated data until a close event.
+
+
 class ShipPanel(QWidget):
     modified = False
     dateTimeFormat = "hh:mm   dddd"
     # TODO: Have a toggle between "Arrival Time" and "Time To Arrival"
-    def __init__(self,shipInfo: dict, PDM: PrUnDM): # Assume Transponder/Registration will always be available, as it is the primary key. In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
+    def __init__(self, shipInfo: dict, PDM: PrUnDM, fleetTracker: FleetTracker): 
+        # Assume Transponder/Registration will always be available, as it is the primary key. 
+        # In the future, I should provide a third argument for custom registrations that aren't in the ship data, cause who knows.
         super().__init__()
         self.PDM = PDM
         self.shipInfo = shipInfo
         self.registration = self.shipInfo["Registration"]
+        self.fleetTracker = fleetTracker
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/ShipPanel.ui', self)
         self.arrivalTime = QDateTime()
@@ -114,6 +218,7 @@ class ShipPanel(QWidget):
         self.setDestinationLabel()
         self.setLocationLabel()
         self.setUsernameLabel()
+        self.setRouteDisplay()
 
         self.setStorageBars()
         self.setArrivalTime()
@@ -123,21 +228,23 @@ class ShipPanel(QWidget):
     def modifyEntry(self):
         print("SP: Modifying Entry of ship "+self.registration)
         self.dialog = ShipDialog(self.PDM, self)
-        self.dialog.loadData(self.shipInfo)
         self.dialog.open()
-        self.dialog.accepted.connect(self.acceptDialog)
+        self.dialog.loadData(self.shipInfo)
+        self.dialog.shipTransponderEdit.setReadOnly(True)
+        self.dialog.accepted.connect(self.acceptShipDialog)
         return
     
-    def acceptDialog(self):
+    def acceptShipDialog(self):
         items = self.dialog.getRouteListItems()
         routeItems = []
         for item in items:
             routeItems.append(item.text())
         self.shipInfo["Route"] = routeItems
-        self.updateRouteDisplay()
-        self.modified = True # TODO: Change this to just call a parent update function. Reuse between this and the Parent acceptDialog()
+        self.setRouteDisplay()
 
-    def updateRouteDisplay(self):
+        return self.fleetTracker.createShipEntry(self.dialog, overwrite=True)
+
+    def setRouteDisplay(self):
         if "Route" not in self.shipInfo or len(self.shipInfo["Route"]) == 0:
             self.routeLabel.setText("No **Route** Set")
             return
@@ -200,58 +307,3 @@ class ShipPanel(QWidget):
             time = QDateTime.currentDateTime()
             self.arrivalTime.setDateTime(time)
 
-
-
-class FleetTracker(QWidget):
-    trackedShips = {}
-    shipDisplayPanels = {}
-
-    def __init__(self, PDM: PrUnDM, parent=None): 
-        super().__init__(parent)
-        self.PDM = PDM
-        cur_dir = os.path.dirname(__file__)
-        uic.loadUi(cur_dir+'/ui/FleetTracker.ui', self)
-        PDM.fetchUserList()
-        PDM.fetchPlanetNameData() # TODO: switch to initX methods
-        PDM.fetchStationData()
-        self.loadShips()
-        self.displayShips()
-    
-    def loadShips(self) -> bool: 
-        ships = self.PDM.getAppData("ships")
-        if not ships:
-            return False # TODO: Raise this error higher
-        for transponder in ships:
-            if ships[transponder]["PSMTracked"]:
-                self.trackedShips[transponder] = ships[transponder]
-        usernames = []
-        # the following section grabs all ships that have a username associated from them, and then tells the PDM to load the fleet data of all those users.
-        for transponder in self.trackedShips: #TODO: Move the ship data loading from here to the PDM
-            if "Username" in self.trackedShips[transponder]:
-                usernames.append(self.trackedShips[transponder]["Username"])
-        usernames = set(usernames)
-        self.PDM.fetchFleetsByUsers(usernames)
-        return True
-    
-    def addShip(self):
-        self.dialog = ShipDialog(self.PDM, self)
-        self.dialog.open()
-        self.dialog.accepted.connect(self.acceptDialog)
-
-    def displayShips(self):
-        for transponder in self.trackedShips:
-            shipData = self.PDM.getShipData(transponder)
-            if not shipData:
-                shipData = {
-                    "Registration": transponder,
-                    "UserNameSubmitted": self.trackedShips[transponder]["Username"]
-                }
-            self.shipDisplayPanels[transponder] = ShipPanel(shipData,self.PDM)
-            self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
-    
-    def acceptDialog(self):
-        items = self.dialog.getRouteListItems()
-        routeItems = []
-        for item in items:
-            routeItems.append(item.text())
-        # Create verification function to make sure the resultant fields are valid!

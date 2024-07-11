@@ -13,8 +13,8 @@ class DSCWidget(QWidget):
     materialData = list()
     ratioWidget = None
 
-    def __init__(self,PDM):
-        super().__init__()
+    def __init__(self,PDM, parent = None):
+        super().__init__(parent)
         self.PDM = PDM
         cur_dir = os.path.dirname(__file__)
         uic.loadUi(cur_dir+'/ui/DiscreteShipmentCalculator.ui', self)

@@ -619,7 +619,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>762</x>
-     <y>169</y>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>498</x>
@@ -634,8 +634,8 @@
    <slot>modifyEntry()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>748</x>
-     <y>190</y>
+     <x>762</x>
+     <y>114</y>
     </hint>
     <hint type="destinationlabel">
      <x>381</x>

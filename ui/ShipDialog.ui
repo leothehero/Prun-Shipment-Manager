@@ -198,7 +198,7 @@
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Discard|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Reset</set>
+      <set>QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Reset</set>
      </property>
      <property name="centerButtons">
       <bool>false</bool>
@@ -216,8 +216,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>298</y>
+     <x>313</x>
+     <y>286</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -257,8 +257,58 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>shipUsernameEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>checkValid()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>266</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>714</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>shipTransponderEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Dialog</receiver>
+   <slot>checkValid()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>144</x>
+     <y>22</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>798</x>
+     <y>105</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>clicked(QAbstractButton*)</signal>
+   <receiver>Dialog</receiver>
+   <slot>resetButton(QAbstractButton*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>183</x>
+     <y>277</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>570</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>addLocations()</slot>
+  <slot>checkValid()</slot>
+  <slot>resetButton(QAbstractButton*)</slot>
  </slots>
 </ui>
