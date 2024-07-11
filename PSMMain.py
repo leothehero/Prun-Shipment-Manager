@@ -10,10 +10,10 @@ from PrunPythonTools.PRUNDataManager import DataManager, APPDATAFIELD
 
 
 print("###########################################")
-print("#PrUn Shipment Manager [PSM]: v0.1.2 Alpha#")
+print("#PrUn Shipment Manager [PSM]: v0.2.1 Alpha#")
 print("###########################################")
 
-version = "v0.1.2"
+version = "v0.2.1"
 
 defaultConfig = dict({
                 "auth": None,
@@ -72,6 +72,10 @@ class MainWindow(QtWidgets.QMainWindow):
         #pixmap.setMask(mask)
         #return QIcon.fromTheme("network-error")
         return QIcon(pixmap)
+    
+    def setAuthToken(self):
+        self.PDM.setAuthToken(self.authTokenEdit.text())
+        self.authTokenEdit.clear()
     
     def closeEvent(self, event: QCloseEvent):
         print("PSM: Closing! Saving Config State")

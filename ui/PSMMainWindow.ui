@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>815</width>
-    <height>526</height>
+    <width>594</width>
+    <height>431</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -52,7 +52,7 @@
      <number>9</number>
     </property>
     <item>
-     <widget class="QWidget" name="DSCButtonWidget" native="true">
+     <widget class="QWidget" name="ActionWidget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
         <horstretch>0</horstretch>
@@ -61,7 +61,7 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
-        <number>0</number>
+        <number>6</number>
        </property>
        <property name="leftMargin">
         <number>0</number>
@@ -83,17 +83,17 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
+        <widget class="QLineEdit" name="authTokenEdit">
+         <property name="text">
+          <string/>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
+         <property name="echoMode">
+          <enum>QLineEdit::EchoMode::Normal</enum>
          </property>
-        </spacer>
+         <property name="placeholderText">
+          <string>Authentication Token</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -135,7 +135,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>815</width>
+     <width>594</width>
      <height>20</height>
     </rect>
    </property>
@@ -155,13 +155,30 @@
      <y>42</y>
     </hint>
     <hint type="destinationlabel">
-     <x>998</x>
+     <x>593</x>
      <y>94</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>authTokenEdit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setAuthToken()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>286</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>698</x>
+     <y>51</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>showDSC()</slot>
+  <slot>setAuthToken()</slot>
  </slots>
 </ui>
