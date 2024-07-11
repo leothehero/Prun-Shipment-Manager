@@ -301,7 +301,8 @@ class ShipPanel(QWidget):
         
     def deleteEntry(self):
         print("SP: Deleting Entry of Ship "+self.registration)
-        raise NotImplementedError
+        print("Not Implemented!")
+        #raise NotImplementedError
 
     def showTime(self): # Unused
             time = QDateTime.currentDateTime()
