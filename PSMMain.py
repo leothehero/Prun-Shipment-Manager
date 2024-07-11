@@ -43,7 +43,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.PDM = DataManager({
             "ConfigPath": "PSM.cfg",
             "QtStatusBar": (self.statusBar(),0),
-        }, defaultConfig, 4)
+        }, defaultConfig, 7)
         
 
         # TODO: Fix

@@ -154,19 +154,31 @@ class FleetTracker(QWidget):
     def displayShips(self):
         print("FLTR: Displaying Ships")
         for transponder in self.trackedShips:
-            shipData = self.PDM.getShipData(transponder)
-            if not shipData:
-                shipData = {
+            self.displayShip(transponder)
+
+    def displayShip(self, transponder):
+        shipData = self.buildShipData(transponder)
+        self.shipDisplayPanels[transponder] = ShipPanel(shipData,self.PDM, self)
+        self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
+
+    def buildShipData(self, transponder):
+        shipData = self.PDM.getShipData(transponder)
+        if not shipData:
+            shipData = {
                     "Registration": transponder,
                     "UserNameSubmitted": self.trackedShips[transponder]["Username"],
                 }
-            shipData["Route"] = (self.trackedShips[transponder]["Route"] or []) if "Route" in self.trackedShips[transponder] else []
-            self.shipDisplayPanels[transponder] = ShipPanel(shipData,self.PDM, self)
-            self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
+        shipData["Route"] = (self.trackedShips[transponder]["Route"] or []) if "Route" in self.trackedShips[transponder] else []
+        return shipData
     
     def acceptShipDialog(self):
         print("FLTR: New Ship Data Valid. Adding Ship.")
-        return self.createShipEntry(self.dialog)
+        transponder = self.dialog.shipTransponderEdit.text().upper()
+        success = self.createShipEntry(self.dialog)
+        if not success: return success
+        self.displayShip(transponder)
+        return True
+
 
     def createShipEntry(self, dialog, overwrite=False) -> bool:
         items = dialog.getRouteListItems()
@@ -301,8 +313,10 @@ class ShipPanel(QWidget):
         
     def deleteEntry(self):
         print("SP: Deleting Entry of Ship "+self.registration)
+        self.fleetTracker.trackedShips[self.registration]["PSMTracked"] = False
+        del self.fleetTracker.shipDisplayPanels[self.registration]
+        self.deleteLater()
         print("Not Implemented!")
-        #raise NotImplementedError
 
     def showTime(self): # Unused
             time = QDateTime.currentDateTime()
