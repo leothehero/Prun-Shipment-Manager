@@ -9,11 +9,11 @@ from FleetTracker import FleetTracker
 from PrunPythonTools.PRUNDataManager import DataManager, APPDATAFIELD
 
 
-print("###########################################")
-print("#PrUn Shipment Manager [PSM]: v0.2.2 Alpha#")
-print("###########################################")
+print("####################################################")
+print("#PrUn Shipment Manager [PSM]: Version 0.3.0-alpha.1#")
+print("####################################################")
 
-version = "v0.2.2"
+version = "0.3.0-alpha.1"
 
 defaultConfig = dict({
                 "auth": None,
