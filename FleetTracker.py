@@ -5,7 +5,7 @@ from PyQt6.QtGui import QValidator
 
 import os, re
 
-from PrunPythonTools.PRUNDataManager import DataManager as PrUnDM
+from PDM.PRUNDataManager import DataManager as PrUnDM
 
 
 def decodeLocation(location): # TODO: Move to PDM

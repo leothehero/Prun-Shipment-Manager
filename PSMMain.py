@@ -6,7 +6,7 @@ import PSMresources
 
 from DSCWidget import DSCWidget
 from FleetTracker import FleetTracker
-from PrunPythonTools.PRUNDataManager import DataManager, APPDATAFIELD
+from PDM.PRUNDataManager import DataManager, APPDATAFIELD
 
 
 print("####################################################")
