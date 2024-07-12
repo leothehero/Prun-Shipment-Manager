@@ -10,10 +10,10 @@ from PrunPythonTools.PRUNDataManager import DataManager, APPDATAFIELD
 
 
 print("###########################################")
-print("#PrUn Shipment Manager [PSM]: v0.2.1 Alpha#")
+print("#PrUn Shipment Manager [PSM]: v0.2.2 Alpha#")
 print("###########################################")
 
-version = "v0.2.1"
+version = "v0.2.2"
 
 defaultConfig = dict({
                 "auth": None,
@@ -43,7 +43,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.PDM = DataManager({
             "ConfigPath": "PSM.cfg",
             "QtStatusBar": (self.statusBar(),0),
-        }, defaultConfig, 4)
+        }, defaultConfig, 7)
         
 
         # TODO: Fix
