@@ -156,13 +156,13 @@ class FleetTracker(QWidget):
         for transponder in self.trackedShips:
             self.displayShip(transponder)
 
-    def displayShip(self, transponder):
-        shipData = self.buildShipData(transponder)
+    def displayShip(self, transponder: str, username: str | None = None):
+        shipData = self.buildShipData(transponder, username)
         self.shipDisplayPanels[transponder] = ShipPanel(shipData,self.PDM, self)
         self.FleetWidget.layout().addWidget(self.shipDisplayPanels[transponder])
 
-    def buildShipData(self, transponder):
-        shipData = self.PDM.getShipData(transponder)
+    def buildShipData(self, transponder:str, username: str | None = None):
+        shipData = self.PDM.getShipData(transponder, username)
         if not shipData:
             shipData = {
                     "Registration": transponder,
@@ -174,13 +174,14 @@ class FleetTracker(QWidget):
     def acceptShipDialog(self):
         print("FLTR: New Ship Data Valid. Adding Ship.")
         transponder = self.dialog.shipTransponderEdit.text().upper()
+        username = self.dialog.shipUsernameEdit.text()
         success = self.createShipEntry(self.dialog)
         if not success: return success
-        self.displayShip(transponder)
+        self.displayShip(transponder,username)
         return True
 
 
-    def createShipEntry(self, dialog, overwrite=False) -> bool:
+    def createShipEntry(self, dialog: ShipDialog, overwrite=False) -> bool:
         items = dialog.getRouteListItems()
         routeItems = []
         for item in items:
